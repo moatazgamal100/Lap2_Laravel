@@ -29,7 +29,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'name'=>'required|string|max:100',
+            'email'=>'required|email',
+            'password'=>'required|confirmed|min:5'
+        ]);
+        User::create($data);
+        return redirect(url('/users'));
     }
 
     /**
@@ -55,7 +61,14 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'name'=>'required|string|max:100',
+            'email'=>'required|email',
+            'password'=>'required|confirmed|min:5'
+        ]);
+        $user=User::findOrFail($id);
+        $user->update($data);
+        return redirect(url('/users'));
     }
 
     /**
@@ -63,6 +76,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user= User::findOrFail($id);
+        $user->delete();
+        return redirect(url('/users'));
     }
 }
