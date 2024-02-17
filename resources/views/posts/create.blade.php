@@ -22,15 +22,6 @@
         <label for="id" class="m-1">Publish At</label>
         <input type="text" name="published_at">
     </div>
-    <div class="d-flex flex-column justify-content-around mt-1">
-        <label for="id" class="m-1">User ID</label>
-        <select name="user_id" id="user_id">
-            @foreach ($users as $user )
-                <option name="user_id">{{$user['id']}}</option>
-            @endforeach
-        </select>
-    </div>
-
     <div class="w-50 mx-auto">
         <input class="btn btn-info w-100 m-2 mx-auto" type="submit" value="ADD">
     </div>

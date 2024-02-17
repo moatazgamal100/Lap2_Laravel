@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PostCreated;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -20,8 +22,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        $users=User::select('id')->get();
-        return view('posts.create',['users'=>$users]);
+
+        return view('posts.create');
     }
 
     /**
@@ -33,11 +35,12 @@ class PostController extends Controller
             'title'=>'required|string|max:100',
             'body'=>'required|string',
             'published_at'=>'required|date',
-            'user_id'=>'required'
         ]);
         $data['slug']=Str::slug($data['title']);
         $data['enabled']=true;
-        Post::create($data);
+        $data['user_id']=Auth::user()['id'];
+        $post = Post::create($data);
+        event(new PostCreated($post));
         return redirect(url('/posts'));
     }
 
@@ -55,9 +58,12 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        $users=User::select('id')->get();
         $post=Post::find($id);
-        return view('posts.edit',['post'=>$post,'users'=>$users]);
+        if($post['user_id']==Auth::user()['id']){
+
+            return view('posts.edit',['post'=>$post]);
+        }
+        return redirect(url('posts'));
     }
 
     /**
@@ -69,7 +75,7 @@ class PostController extends Controller
             'title'=>'required|string|max:100',
             'body'=>'required|string',
             'published_at'=>'required|date',
-            'user_id'=>'required'
+
         ]);
         $post=Post::findOrFail($id);
         $data['slug']=Str::slug($data['title']);
